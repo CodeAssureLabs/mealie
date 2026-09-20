@@ -13,6 +13,12 @@ from mealie.schema.household.group_shopping_list import (
     ShoppingListSave,
 )
 from mealie.schema.recipe.recipe_ingredient import IngredientUnit, SaveIngredientFood
+from mealie.services.event_bus_service.event_bus_service import EventBusService
+from mealie.services.event_bus_service.event_types import (
+    EventOperation,
+    EventShoppingListItemBulkData,
+    EventTypes,
+)
 from tests import utils
 from tests.utils import api_routes
 from tests.utils.factories import random_int, random_string
@@ -108,6 +114,49 @@ def test_shopping_list_items_create_many(
 
     # make sure we found all items
     assert not created_item_ids
+
+
+def test_shopping_list_items_create_many_publishes_one_event_per_list(
+    api_client: TestClient,
+    unique_user: TestUser,
+    shopping_lists: list[ShoppingListOut],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    dispatched: list[dict] = []
+
+    def capture_dispatch(self, **kwargs) -> None:
+        dispatched.append(kwargs)
+
+    monkeypatch.setattr(EventBusService, "dispatch", capture_dispatch)
+
+    items = [create_item(shopping_list.id) for shopping_list in shopping_lists for _ in range(3)]
+    response = api_client.post(
+        api_routes.households_shopping_items_create_bulk,
+        json=items,
+        headers=unique_user.token,
+    )
+    as_json = utils.assert_deserialize(response, 201)
+
+    expected_item_ids_by_list: dict[str, set[str]] = {}
+    for item in as_json["createdItems"]:
+        expected_item_ids_by_list.setdefault(item["shoppingListId"], set()).add(item["id"])
+
+    # the created items are fanned out as one bulk event per shopping list
+    assert len(dispatched) == len(shopping_lists)
+    for event in dispatched:
+        assert event["event_type"] == EventTypes.shopping_list_updated
+        assert str(event["group_id"]) == unique_user.group_id
+        assert str(event["household_id"]) == unique_user.household_id
+
+        document_data = event["document_data"]
+        assert isinstance(document_data, EventShoppingListItemBulkData)
+        assert document_data.operation == EventOperation.create
+
+        expected_item_ids = expected_item_ids_by_list.pop(str(document_data.shopping_list_id))
+        assert {str(item_id) for item_id in document_data.shopping_list_item_ids} == expected_item_ids
+
+    # every list received exactly one event
+    assert not expected_item_ids_by_list
 
 
 def test_shopping_list_items_auto_assign_label_with_food_without_label(
