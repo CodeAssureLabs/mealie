@@ -1,0 +1,68 @@
+# CodeAssure architecture manifest for mealie (backend only).
+#
+# Grounded in AGENTS.md / CLAUDE.md "Backend Architecture (mealie/)":
+#   Repository-Service-Controller pattern —
+#     Controllers (mealie/routes/**)  handle HTTP concerns and delegate to services
+#     Services    (mealie/services/**) hold business logic and coordinate repositories
+#     Repositories (mealie/repos/**)   are the data-access layer over SQLAlchemy
+#     Schemas     (mealie/schema/**)   are the pydantic domain models (*In/*Out/*Create/*Update)
+#   Settings/security/deps live in mealie/core (config), shared helpers in mealie/pkgs (utils).
+# The frontend (frontend/**) is intentionally not governed by this manifest.
+schema_version: 1
+manifest_version: 1
+repo: CodeAssureLabs/mealie
+layers:
+  entry: [api, service, domain, data]
+  api: [service, domain, data]
+  service: [domain, data]
+  data: [domain]
+  domain: []
+  tests: [entry, api, service, domain, data]
+cross_cutting: [utils, config]
+forbidden_edges:
+  - id: repos-no-routes
+    from: data
+    to: api
+    reason: "mealie/repos and mealie/db are the data-access layer; they must never import FastAPI routers/controllers from mealie/routes (AGENTS.md: controllers delegate to services, services coordinate repositories)"
+    check: blocking
+    severity: high
+  - id: services-no-routes
+    from: service
+    to: api
+    reason: "mealie/services holds business logic and must not depend on the HTTP layer in mealie/routes (AGENTS.md repository-service-controller pattern: routes call services, never the reverse)"
+    check: blocking
+    severity: high
+  - id: schema-no-services
+    from: domain
+    to: service
+    reason: "mealie/schema pydantic models are the domain layer and must not import business logic from mealie/services (AGENTS.md: schemas are plain *In/*Out/*Create/*Update models consumed by services and routes)"
+    check: blocking
+    severity: high
+required_companions:
+  - id: router-needs-integration-test
+    when: "mealie/routes/**/*.py"
+    require: ["tests/integration_tests/**"]
+    reason: "a new or changed router module must ship with an integration test under tests/integration_tests (AGENTS.md: use the api_client fixture for integration tests; follow existing patterns in tests/integration_tests/)"
+    check: detect_only
+invariants:
+  - id: no-print-in-services
+    within: "mealie/services/**"
+    forbid_pattern: '\bprint\('
+    reason: "services log through mealie.core.root_logger; ruff flake8-print (T) is enabled in pyproject.toml so bare print() is a lint error"
+    check: detect_only
+  - id: no-requests-in-services
+    within: "mealie/services/**"
+    forbid_pattern: '(?m)^\s*(import requests\b|from requests\b)'
+    reason: "outbound HTTP from services goes through httpx via mealie.pkgs.safehttp (SSRF-protected SafeTransport, the drop-in for requests.*), never the bare requests library"
+    check: detect_only
+  - id: no-raw-sql-in-routes
+    within: "mealie/routes/**"
+    forbid_pattern: '\btext\(|\.execute\('
+    reason: "route controllers must not run raw SQL; data access goes through AllRepositories (AGENTS.md: services coordinate repositories, controllers delegate to services)"
+    check: detect_only
+exemptions:
+  - edge: {from: service, to: entry}
+    paths: ["mealie/services/backups_v2/**"]
+    reason: "the v2 backup exporter drives alembic through mealie/db/init_db (ALEMBIC_DIR / init_db helpers, the DB bootstrap module) when restoring a dump; sanctioned pre-existing coupling"
+    ratified_by: lwynter
+    ratified_at: "2026-09-20"

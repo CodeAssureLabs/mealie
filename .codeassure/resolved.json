@@ -1,0 +1,126 @@
+{
+  "artifact_version": 1,
+  "source_manifest_version": 1,
+  "layer_map": {},
+  "path_globs": [
+    {
+      "glob": "mealie/__init__.py",
+      "layer": "entry"
+    },
+    {
+      "glob": "mealie/db/init_db.py",
+      "layer": "entry"
+    },
+    {
+      "glob": "mealie/app.py",
+      "layer": "entry"
+    },
+    {
+      "glob": "mealie/main.py",
+      "layer": "entry"
+    },
+    {
+      "glob": "mealie/scripts/**",
+      "layer": "entry"
+    },
+    {
+      "glob": "mealie/services/query_filter/**",
+      "layer": "utils"
+    },
+    {
+      "glob": "mealie/routes/**",
+      "layer": "api"
+    },
+    {
+      "glob": "mealie/middleware/**",
+      "layer": "api"
+    },
+    {
+      "glob": "mealie/services/**",
+      "layer": "service"
+    },
+    {
+      "glob": "mealie/schema/**",
+      "layer": "domain"
+    },
+    {
+      "glob": "mealie/db/models/**",
+      "layer": "domain"
+    },
+    {
+      "glob": "mealie/repos/**",
+      "layer": "data"
+    },
+    {
+      "glob": "mealie/db/**",
+      "layer": "data"
+    },
+    {
+      "glob": "mealie/alembic/**",
+      "layer": "data"
+    },
+    {
+      "glob": "mealie/core/**",
+      "layer": "config"
+    },
+    {
+      "glob": "mealie/assets/**",
+      "layer": "utils"
+    },
+    {
+      "glob": "mealie/pkgs/**",
+      "layer": "utils"
+    },
+    {
+      "glob": "mealie/lang/**",
+      "layer": "utils"
+    },
+    {
+      "glob": "tests/**",
+      "layer": "tests"
+    }
+  ],
+  "compiled_rules": {
+    "allowed": {
+      "entry": [
+        "api",
+        "service",
+        "domain",
+        "data",
+        "utils",
+        "config"
+      ],
+      "api": [
+        "service",
+        "domain",
+        "data",
+        "utils",
+        "config"
+      ],
+      "service": [
+        "domain",
+        "data",
+        "utils",
+        "config"
+      ],
+      "data": [
+        "domain",
+        "utils",
+        "config"
+      ],
+      "domain": [
+        "utils",
+        "config"
+      ],
+      "tests": [
+        "entry",
+        "api",
+        "service",
+        "domain",
+        "data",
+        "utils",
+        "config"
+      ]
+    }
+  }
+}
