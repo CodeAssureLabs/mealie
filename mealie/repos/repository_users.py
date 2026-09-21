@@ -64,7 +64,8 @@ class RepositoryUsers(GroupRepositoryGeneric[PrivateUser, User]):
         shutil.rmtree(PrivateUser.get_directory(value))
         return entry
 
-    def get_by_username(self, username: str) -> PrivateUser | None:
+    def find_by_username(self, username: str) -> PrivateUser | None:
+        """Look up a single user by exact username, or None when no user matches."""
         stmt = select(User).filter(User.username == username)
         dbuser = self.session.execute(stmt).scalars().one_or_none()
         return None if dbuser is None else self.schema.model_validate(dbuser)
