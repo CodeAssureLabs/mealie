@@ -28,7 +28,7 @@ class TranscriptionCompiler(SourceCompiler):
         if not (settings and settings.audio_provider_enabled):
             return False
 
-        return transcription.is_video_url(url)
+        return transcription.is_supported_video_url(url)
 
     async def compile(self) -> OpenAICompiledSource | None:
         url = self._url() or ""

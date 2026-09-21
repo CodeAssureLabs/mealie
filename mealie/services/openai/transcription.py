@@ -33,7 +33,7 @@ def get_yt_dlp_extractors() -> list:
     return [ie for ie in yt_dlp.extractor.gen_extractors() if ie.working() and not isinstance(ie, GenericIE)]
 
 
-def is_video_url(url: str) -> bool:
+def is_supported_video_url(url: str) -> bool:
     """Whether yt-dlp recognizes the URL as something it can download."""
 
     if not url:
