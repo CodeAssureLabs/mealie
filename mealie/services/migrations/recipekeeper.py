@@ -11,7 +11,8 @@ from .utils.migration_alias import MigrationAlias
 from .utils.migration_helpers import parse_iso8601_duration, safe_local_path
 
 
-def clean_instructions(instructions: list[str]) -> list[str]:
+def strip_step_numbers(instructions: list[str]) -> list[str]:
+    """Remove the leading "1. ", "2. " ... prefixes Recipe Keeper writes on each direction."""
     try:
         for i, instruction in enumerate(instructions):
             if instruction.startswith(f"{i + 1}. "):
