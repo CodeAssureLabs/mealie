@@ -3,6 +3,7 @@ from mealie.routes._base.routers import AdminAPIRouter
 from . import (
     admin_about,
     admin_backups,
+    admin_config_lockout,
     admin_debug,
     admin_email,
     admin_maintenance,
@@ -23,3 +24,4 @@ router.include_router(admin_email.router, tags=["Admin: Email"])
 router.include_router(admin_backups.router, tags=["Admin: Backups"])
 router.include_router(admin_maintenance.router, tags=["Admin: Maintenance"])
 router.include_router(admin_debug.router, tags=["Admin: Debug"])
+router.include_router(admin_config_lockout.router, tags=["Admin: Config"])
