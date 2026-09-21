@@ -47,8 +47,8 @@ class MigrationReaders:
         return recipe_data
 
 
-def split_by_comma(tag_string: str):
-    """Splits a single string by ',' performs a line strip and then title cases the resulting string
+def split_comma_separated(tag_string: str):
+    """Splits a comma-separated string, strips each part and then title cases the resulting strings
 
     Args:
         tag_string (str): [description]
