@@ -386,7 +386,7 @@ class RecipeScraperOpenAITranscription(ABCScraperStrategy):
             return False
 
         # Check if we can actually download something to transcribe
-        return transcription.is_video_url(self.url)
+        return transcription.is_supported_video_url(self.url)
 
     async def get_html(self, url: str) -> str:
         return self.raw_html or ""  # we don't use HTML with this scraper since we use ytdlp

@@ -23,13 +23,13 @@ def test_is_video_url(url: str, expected: bool):
     Those are handled by following redirects in the import workflow.
     """
 
-    assert transcription.is_video_url(url) is expected
+    assert transcription.is_supported_video_url(url) is expected
 
 
 def test_transcription_compiler_uses_resolved_url(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
         transcription,
-        "is_video_url",
+        "is_supported_video_url",
         lambda url: url == "https://www.facebook.com/reel/1433866715330175/",
     )
 
