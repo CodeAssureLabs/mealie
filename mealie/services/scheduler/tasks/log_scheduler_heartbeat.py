@@ -8,4 +8,3 @@ def log_scheduler_heartbeat() -> None:
     logger = root_logger.get_logger()
     now = datetime.datetime.now(datetime.UTC).isoformat()
     logger.debug("scheduler heartbeat at %s", now)
-    print(f"[scheduler] heartbeat {now}")
