@@ -1,4 +1,3 @@
-import contextlib
 import functools
 import html
 import json
@@ -13,15 +12,13 @@ from mealie.core.root_logger import get_logger
 from mealie.lang.providers import Translator, get_all_translations
 from mealie.schema.recipe.recipe import Recipe
 from mealie.services.parser_services.parser_utils import extract_quantity_from_string
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 logger = get_logger("recipe-scraper")
 
 NO_IMAGE = "no image"
 """Placeholder stored on a recipe that has no image. Not a URL, and must never be fetched."""
 
-
-MATCH_DIGITS = re.compile(r"\d+([.,]\d+)?")
-""" Allow for commas as decimals (common in Europe) """
 
 MATCH_ISO_STR = re.compile(
     r"^P((\d+)Y)?((\d+)M)?((?P<weeks>\d+)W)?((?P<days>\d+)D)?"
@@ -630,39 +627,3 @@ def clean_tags(data: str | list[str]) -> list[str]:
             return []
             # should probably raise exception
             # raise TypeError(f"Unexpected type for tags: {type(data)}, {data}")
-
-
-def clean_nutrition(nutrition: dict | None) -> dict[str, str]:
-    """
-    clean_nutrition takes a dictionary of nutrition information and cleans it up
-    to be stored in the database. It will remove any keys that are not in the
-    list of valid keys
-
-    Assumptionas:
-        - All units are supplied in grams, expect sodium and cholesterol which maybe be in milligrams
-
-    Returns:
-        dict[str, str]: If the argument is None, or not a dictionary, an empty dictionary is returned
-    """
-    if not isinstance(nutrition, dict):
-        return {}
-
-    output_nutrition = {}
-    for key, val in nutrition.items():
-        with contextlib.suppress(AttributeError, TypeError):
-            if matched_digits := MATCH_DIGITS.search(val):
-                output_nutrition[key] = matched_digits.group(0).replace(",", ".")
-
-    for key in ["sodiumContent", "cholesterolContent"]:
-        if val := nutrition.get(key, None):
-            if isinstance(val, str) and "m" not in val and "g" in val:
-                with contextlib.suppress(AttributeError, TypeError):
-                    output_nutrition[key] = str(float(output_nutrition[key]) * 1000)
-
-    for key in ["calories"]:
-        if val := nutrition.get(key, None):
-            if isinstance(val, int | float):
-                with contextlib.suppress(AttributeError, TypeError):
-                    output_nutrition[key] = str(val)
-
-    return output_nutrition

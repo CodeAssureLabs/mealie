@@ -2,7 +2,7 @@ from pydantic import field_validator
 
 from mealie.schema._mealie import MealieModel
 from mealie.schema.recipe.recipe_nutrition import Nutrition
-from mealie.services.scraper.cleaner import clean_nutrition
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 
 class RecipeNutritionImport(MealieModel):
