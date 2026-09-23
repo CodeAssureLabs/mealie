@@ -110,6 +110,29 @@ def test_shopping_list_items_create_many(
     assert not created_item_ids
 
 
+def test_shopping_list_items_create_many_across_multiple_lists(
+    api_client: TestClient, unique_user: TestUser, shopping_lists: list[ShoppingListOut]
+) -> None:
+    # bulk-creating items that span several shopping lists exercises the per-list
+    # event fan-out grouping, not just the single-list case covered above
+    items = [create_item(shopping_list.id) for shopping_list in shopping_lists for _ in range(2)]
+
+    response = api_client.post(
+        api_routes.households_shopping_items_create_bulk,
+        json=items,
+        headers=unique_user.token,
+    )
+    as_json = utils.assert_deserialize(response, 201)
+    assert len(as_json["createdItems"]) == len(items)
+
+    created_by_list: dict[str, int] = {}
+    for item in as_json["createdItems"]:
+        created_by_list[item["shoppingListId"]] = created_by_list.get(item["shoppingListId"], 0) + 1
+
+    for shopping_list in shopping_lists:
+        assert created_by_list[str(shopping_list.id)] == 2
+
+
 def test_shopping_list_items_auto_assign_label_with_food_without_label(
     api_client: TestClient, unique_user: TestUser, shopping_list: ShoppingListOut
 ):

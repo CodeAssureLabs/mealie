@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from functools import cached_property
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -30,69 +29,12 @@ from mealie.schema.response.responses import SuccessResponse
 from mealie.services.event_bus_service.event_types import (
     EventOperation,
     EventShoppingListData,
-    EventShoppingListItemBulkData,
     EventTypes,
 )
+from mealie.services.household_services.shopping_list_events import ShoppingListEventService
 from mealie.services.household_services.shopping_lists import ShoppingListService
 
 item_router = APIRouter(prefix="/households/shopping/items", tags=["Households: Shopping List Items"])
-
-
-def publish_list_item_events(publisher: Callable, items_collection: ShoppingListItemsCollectionOut) -> None:
-    items_by_list_id: dict[UUID4, list[ShoppingListItemOut]]
-    if items_collection.created_items:
-        items_by_list_id = {}
-        for item in items_collection.created_items:
-            items_by_list_id.setdefault(item.shopping_list_id, []).append(item)
-
-        for shopping_list_id, items in items_by_list_id.items():
-            publisher(
-                EventTypes.shopping_list_updated,
-                document_data=EventShoppingListItemBulkData(
-                    operation=EventOperation.create,
-                    shopping_list_id=shopping_list_id,
-                    shopping_list_item_ids=[item.id for item in items],
-                ),
-                # since these are all the same shopping list, they share a group_id and household_id
-                group_id=items[0].group_id,
-                household_id=items[0].household_id,
-            )
-
-    if items_collection.updated_items:
-        items_by_list_id = {}
-        for item in items_collection.updated_items:
-            items_by_list_id.setdefault(item.shopping_list_id, []).append(item)
-
-        for shopping_list_id, items in items_by_list_id.items():
-            publisher(
-                EventTypes.shopping_list_updated,
-                document_data=EventShoppingListItemBulkData(
-                    operation=EventOperation.update,
-                    shopping_list_id=shopping_list_id,
-                    shopping_list_item_ids=[item.id for item in items],
-                ),
-                # since these are all the same shopping list, they share a group_id and household_id
-                group_id=items[0].group_id,
-                household_id=items[0].household_id,
-            )
-
-    if items_collection.deleted_items:
-        items_by_list_id = {}
-        for item in items_collection.deleted_items:
-            items_by_list_id.setdefault(item.shopping_list_id, []).append(item)
-
-        for shopping_list_id, items in items_by_list_id.items():
-            publisher(
-                EventTypes.shopping_list_updated,
-                document_data=EventShoppingListItemBulkData(
-                    operation=EventOperation.delete,
-                    shopping_list_id=shopping_list_id,
-                    shopping_list_item_ids=[item.id for item in items],
-                ),
-                # since these are all the same shopping list, they share a group_id and household_id
-                group_id=items[0].group_id,
-                household_id=items[0].household_id,
-            )
 
 
 @controller(item_router)
@@ -100,6 +42,10 @@ class ShoppingListItemController(BaseCrudController):
     @cached_property
     def service(self):
         return ShoppingListService(self.repos)
+
+    @cached_property
+    def event_service(self):
+        return ShoppingListEventService(self.publish_event)
 
     @cached_property
     def repo(self):
@@ -121,7 +67,7 @@ class ShoppingListItemController(BaseCrudController):
     @item_router.post("/create-bulk", response_model=ShoppingListItemsCollectionOut, status_code=201)
     def create_many(self, data: list[ShoppingListItemCreate]):
         items = self.service.bulk_create_items(data)
-        publish_list_item_events(self.publish_event, items)
+        self.event_service.publish_collection(items)
         return items
 
     @item_router.post("", response_model=ShoppingListItemsCollectionOut, status_code=201)
@@ -135,7 +81,7 @@ class ShoppingListItemController(BaseCrudController):
     @item_router.put("", response_model=ShoppingListItemsCollectionOut)
     def update_many(self, data: list[ShoppingListItemUpdateBulk]):
         items = self.service.bulk_update_items(data)
-        publish_list_item_events(self.publish_event, items)
+        self.event_service.publish_collection(items)
         return items
 
     @item_router.put("/{item_id}", response_model=ShoppingListItemsCollectionOut)
@@ -145,7 +91,7 @@ class ShoppingListItemController(BaseCrudController):
     @item_router.delete("", response_model=SuccessResponse)
     def delete_many(self, ids: list[UUID4] = Query(None)):
         items = self.service.bulk_delete_items(ids)
-        publish_list_item_events(self.publish_event, items)
+        self.event_service.publish_collection(items)
         return SuccessResponse.respond()
 
     @item_router.delete("/{item_id}", response_model=SuccessResponse)
@@ -165,6 +111,10 @@ class ShoppingListController(BaseCrudController):
     @cached_property
     def repo(self):
         return self.repos.group_shopping_lists
+
+    @cached_property
+    def event_service(self):
+        return ShoppingListEventService(self.publish_event)
 
     # =======================================================================
     # CRUD Operations
@@ -257,7 +207,7 @@ class ShoppingListController(BaseCrudController):
     def add_recipe_ingredients_to_list(self, item_id: UUID4, data: list[ShoppingListAddRecipeParamsBulk]):
         shopping_list, items = self.service.add_recipe_ingredients_to_list(item_id, data)
 
-        publish_list_item_events(self.publish_event, items)
+        self.event_service.publish_collection(items)
         return shopping_list
 
     @router.post("/{item_id}/recipe/{recipe_id}", response_model=ShoppingListOut, deprecated=True)
@@ -279,5 +229,5 @@ class ShoppingListController(BaseCrudController):
             item_id, recipe_id, data.recipe_decrement_quantity if data else 1
         )
 
-        publish_list_item_events(self.publish_event, items)
+        self.event_service.publish_collection(items)
         return shopping_list
