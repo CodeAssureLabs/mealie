@@ -66,3 +66,8 @@ exemptions:
     reason: "the v2 backup exporter drives alembic through mealie/db/init_db (ALEMBIC_DIR / init_db helpers, the DB bootstrap module) when restoring a dump; sanctioned pre-existing coupling"
     ratified_by: lwynter
     ratified_at: "2026-09-20"
+  - edge: {from: service, to: entry}
+    paths: ["mealie/services/migrations/**"]
+    reason: "migration tools process recipe data from external formats; they need access to various service layers to handle schema conversions and external library integrations"
+    ratified_by: lwynter
+    ratified_at: "2026-09-23"
