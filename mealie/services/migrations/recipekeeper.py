@@ -4,7 +4,7 @@ from pathlib import Path
 
 from bs4 import BeautifulSoup
 
-from mealie.services.scraper import cleaner
+from mealie.pkgs.nutrition import clean_nutrition
 
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
@@ -79,7 +79,7 @@ class RecipeKeeperMigrator(BaseMigrator):
             MigrationAlias(key="tags", alias="recipeCourse", func=to_list),
             MigrationAlias(key="recipeCategory", alias="recipeCategory", func=to_list),
             MigrationAlias(key="notes", alias="recipeNotes"),
-            MigrationAlias(key="nutrition", alias="nutrition", func=cleaner.clean_nutrition),
+            MigrationAlias(key="nutrition", alias="nutrition", func=clean_nutrition),
             MigrationAlias(key="rating", alias="recipeRating"),
             MigrationAlias(key="orgURL", alias="recipeSource"),
             MigrationAlias(key="recipeYield", alias="recipeYield"),

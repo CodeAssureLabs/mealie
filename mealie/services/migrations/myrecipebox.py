@@ -5,9 +5,9 @@ from typing import Any
 
 from slugify import slugify
 
+from mealie.pkgs.nutrition import clean_nutrition
 from mealie.schema.recipe.recipe import Recipe
 from mealie.services.migrations.utils.migration_alias import MigrationAlias
-from mealie.services.scraper import cleaner
 
 from ._migration_base import BaseMigrator
 from .utils.migration_helpers import split_by_line_break, split_by_semicolon
@@ -86,7 +86,7 @@ class MyRecipeBoxMigrator(BaseMigrator):
 
             nutrition[key] = value
 
-        return cleaner.clean_nutrition(nutrition) if nutrition else None
+        return clean_nutrition(nutrition) if nutrition else None
 
     def extract_rows(self, file: Path) -> list[dict]:
         """Extracts the rows from the CSV file and returns a list of dictionaries"""
