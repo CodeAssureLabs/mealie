@@ -1,0 +1,4 @@
+# Layer placement for frontend configuration files not governed by .codeassure/architecture.yaml
+# These are infrastructure/configuration files that fall outside the main layer hierarchy
+frontend/vuetify.options.js: config
+frontend/vitest.config.js: config
