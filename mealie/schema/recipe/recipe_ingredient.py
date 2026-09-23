@@ -13,7 +13,7 @@ from sqlalchemy.orm.interfaces import LoaderOption
 
 from mealie.db.models.recipe import IngredientFoodModel, IngredientFoodSubstitutionModel
 from mealie.lang.locale_config import LocalePluralFoodHandling
-from mealie.lang.providers import get_locale_context
+from mealie.lang.translations import get_locale_context
 from mealie.schema._mealie import MealieModel
 from mealie.schema._mealie.mealie_model import UpdatedAtField
 from mealie.schema._mealie.types import NoneFloat
