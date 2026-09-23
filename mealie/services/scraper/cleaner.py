@@ -12,7 +12,6 @@ from mealie.core.root_logger import get_logger
 from mealie.lang.providers import Translator, get_all_translations
 from mealie.schema.recipe.recipe import Recipe
 from mealie.services.parser_services.parser_utils import extract_quantity_from_string
-from mealie.utils.nutrition_cleaning import clean_nutrition
 
 logger = get_logger("recipe-scraper")
 

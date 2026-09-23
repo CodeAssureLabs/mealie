@@ -6,6 +6,7 @@ import pytest
 
 from mealie.lang.providers import get_locale_provider
 from mealie.services.scraper import cleaner
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 
 @dataclass(slots=True)
@@ -926,7 +927,7 @@ nutrition_test_cases = (
 
 @pytest.mark.parametrize("case", nutrition_test_cases, ids=(x.test_id for x in nutrition_test_cases))
 def test_cleaner_clean_nutrition(case: CleanerCase):
-    result = cleaner.clean_nutrition(case.input)
+    result = clean_nutrition(case.input)
     assert case.expected == result
 
 

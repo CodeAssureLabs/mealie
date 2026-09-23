@@ -27,6 +27,7 @@ from mealie.services.recipe.import_workflow import (
     WorkflowOptions,
 )
 from mealie.services.scraper.scraped_extras import ScrapedExtras
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 from . import cleaner
 
@@ -262,7 +263,7 @@ class RecipeScraperPackage(ABCScraperStrategy):
             slug="",
             image=try_get_default(scraped_data.image, "image", None, cleaner.clean_image),
             description=try_get_default(scraped_data.description, "description", "", cleaner.clean_string),
-            nutrition=try_get_default(scraped_data.nutrients, "nutrition", None, cleaner.clean_nutrition),
+            nutrition=try_get_default(scraped_data.nutrients, "nutrition", None, clean_nutrition),
             recipe_yield=try_get_default(scraped_data.yields, "recipeYield", "1", cleaner.clean_string),
             recipe_ingredient=try_get_default(
                 scraped_data.ingredients,
