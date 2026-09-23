@@ -66,3 +66,7 @@ exemptions:
     reason: "the v2 backup exporter drives alembic through mealie/db/init_db (ALEMBIC_DIR / init_db helpers, the DB bootstrap module) when restoring a dump; sanctioned pre-existing coupling"
     ratified_by: lwynter
     ratified_at: "2026-09-20"
+  - file: frontend/vuetify.options.js
+    reason: "Nuxt configuration file in the intentionally unmanaged frontend layer; no layer classification needed"
+    ratified_by: lwynter
+    ratified_at: "2026-09-23"
