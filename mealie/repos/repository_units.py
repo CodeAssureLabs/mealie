@@ -5,7 +5,7 @@ from sqlalchemy import select, update
 
 from mealie.db.models.household.shopping_list import ShoppingListItem
 from mealie.db.models.recipe.ingredient import IngredientUnitModel
-from mealie.lang.providers import get_locale_context
+from mealie.lang.translations import get_locale_context
 from mealie.schema.recipe.recipe_ingredient import IngredientUnit, StandardizedUnitType
 
 from .repository_generic import GroupRepositoryGeneric

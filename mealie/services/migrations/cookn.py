@@ -188,7 +188,7 @@ class CooknMigrator(BaseMigrator):
             _brand_row = db.query_by_id("temp_brand", "ID", [_brand_id])[0]
 
             amount_str = db.get_data(_ingredient_row, "AMOUNT_QTY_STRING")
-            amount, _ = extract_quantity_from_string(amount_str)
+            amount, _ = extract_quantity_from_string(amount_str, 0.0)
             unit_name = db.get_data(_unit_row, "NAME")
             food_name = db.get_data(_food_row, "NAME")
 
