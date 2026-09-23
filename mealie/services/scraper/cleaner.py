@@ -459,7 +459,7 @@ def clean_yield(yields: str | list[str] | None) -> tuple[float, float, str]:
         if not isinstance(yld, str):
             yld = str(yld)
 
-        qty, txt = extract_quantity_from_string(yld)
+        qty, txt = extract_quantity_from_string(yld, 0.0)
         if qty and _is_serving_string(yld):
             servings_qty = qty
         else:
