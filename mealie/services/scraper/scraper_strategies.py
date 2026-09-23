@@ -14,6 +14,7 @@ from mealie.core import exceptions
 from mealie.core.dependencies.dependencies import get_temporary_path
 from mealie.core.root_logger import get_logger
 from mealie.lang.providers import Translator
+from mealie.pkgs.nutrition import clean_nutrition
 from mealie.repos.repository_factory import AllRepositories
 from mealie.schema.openai.recipe import OpenAIRecipe
 from mealie.schema.recipe.recipe import Recipe, RecipeStep
@@ -262,7 +263,7 @@ class RecipeScraperPackage(ABCScraperStrategy):
             slug="",
             image=try_get_default(scraped_data.image, "image", None, cleaner.clean_image),
             description=try_get_default(scraped_data.description, "description", "", cleaner.clean_string),
-            nutrition=try_get_default(scraped_data.nutrients, "nutrition", None, cleaner.clean_nutrition),
+            nutrition=try_get_default(scraped_data.nutrients, "nutrition", None, clean_nutrition),
             recipe_yield=try_get_default(scraped_data.yields, "recipeYield", "1", cleaner.clean_string),
             recipe_ingredient=try_get_default(
                 scraped_data.ingredients,

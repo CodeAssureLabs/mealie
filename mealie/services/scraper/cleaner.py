@@ -11,7 +11,6 @@ from slugify import slugify
 
 from mealie.core.root_logger import get_logger
 from mealie.lang.providers import Translator, get_all_translations
-from mealie.pkgs.nutrition import clean_nutrition
 from mealie.schema.recipe.recipe import Recipe
 from mealie.services.parser_services.parser_utils import extract_quantity_from_string
 
