@@ -9,7 +9,7 @@ from mealie.schema.reports.reports import ReportEntryCreate
 
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
-from .utils.migration_helpers import import_image, safe_local_path
+from .utils.migration_helpers import import_image, resolve_safe_local_path
 
 
 def parse_recipe_tags(tags: list) -> list[str]:
@@ -52,7 +52,7 @@ class CopyMeThatMigrator(BaseMigrator):
             # the recipe image tag has no id, so we parse it directly
             if tag.name == "img" and "recipeImage" in tag.get("class", []):
                 if image_path := tag.get("src"):
-                    safe = safe_local_path(source_dir.joinpath(image_path), source_dir)
+                    safe = resolve_safe_local_path(source_dir.joinpath(image_path), source_dir)
                     if safe is not None:
                         recipe_dict["image"] = str(safe)
 
