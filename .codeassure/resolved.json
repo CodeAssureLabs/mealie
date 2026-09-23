@@ -78,6 +78,10 @@
     {
       "glob": "tests/**",
       "layer": "tests"
+    },
+    {
+      "glob": "frontend/**",
+      "layer": "utils"
     }
   ],
   "compiled_rules": {
