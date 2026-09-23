@@ -7,7 +7,7 @@ from mealie.schema.recipe.recipe_ingredient import RecipeIngredient
 from mealie.schema.recipe.recipe_notes import RecipeNote
 from mealie.schema.recipe.recipe_nutrition import Nutrition
 from mealie.schema.recipe.recipe_step import RecipeStep
-from mealie.services.scraper import cleaner
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 from .context import WorkflowContext
 
@@ -43,7 +43,7 @@ def convert_nutrition(openai_recipe: OpenAIRecipe) -> Nutrition | None:
 
     # clean_nutrition expects schema.org's camelCase keys
     raw = {to_camel(key): value for key, value in openai_recipe.nutrition.model_dump().items()}
-    cleaned = cleaner.clean_nutrition(raw)
+    cleaned = clean_nutrition(raw)
     return Nutrition(**cleaned) if cleaned else None
 
 

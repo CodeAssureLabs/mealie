@@ -8,7 +8,7 @@ from slugify import slugify
 
 from mealie.pkgs.cache import cache_key
 from mealie.schema.reports.reports import ReportEntryCreate
-from mealie.services.scraper import cleaner
+from mealie.utils.nutrition_cleaning import clean_nutrition
 
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
@@ -87,7 +87,7 @@ class PlanToEatMigrator(BaseMigrator):
         """Parses the nutrition data from the row"""
         nut_dict = {normalized_k: row[k] for k, normalized_k in nutrition_map.items() if k in row}
 
-        return cleaner.clean_nutrition(nut_dict)
+        return clean_nutrition(nut_dict)
 
     def _get_categories_from_row(self, row: dict) -> list[str]:
         """Parses various category-like columns into categories"""
