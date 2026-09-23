@@ -1,5 +1,9 @@
 from mealie.schema.recipe.recipe_nutrition import Nutrition
-from mealie.services.recipe.recipe_nutrition_summary import has_nutrition
+
+
+def has_nutrition(nutrition: Nutrition | None) -> bool:
+    """True when at least one nutrition field carries a value."""
+    return nutrition is not None and any(nutrition.model_dump().values())
 
 
 def format_nutrition_line(field: str, value: str) -> str:
