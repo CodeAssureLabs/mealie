@@ -64,7 +64,7 @@ def convert_vulgar_fractions_to_regular_fractions(text: str) -> str:
     return text
 
 
-def extract_quantity_from_string(source_str: str, default_quantity: float) -> tuple[float, str]:
+def extract_quantity_from_string(source_str: str, default_quantity: float = 0.0) -> tuple[float, str]:
     """
     Extracts a quantity from a string. The quantity can be a fraction, decimal, or integer.
 
