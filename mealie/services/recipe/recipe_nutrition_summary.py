@@ -1,5 +1,10 @@
 from mealie.schema.recipe.recipe_nutrition import Nutrition
-from mealie.services.recipe.recipe_nutrition_format import format_nutrition_line
+
+
+def format_nutrition_line(field: str, value: str) -> str:
+    """Render a single nutrition field as ``Label: value``."""
+    label = field.replace("_", " ").title()
+    return f"{label}: {value}"
 
 
 def has_nutrition(nutrition: Nutrition | None) -> bool:
