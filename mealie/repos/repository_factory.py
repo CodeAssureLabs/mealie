@@ -39,6 +39,7 @@ from mealie.db.models.users import LongLiveToken, User
 from mealie.db.models.users.password_reset import PasswordResetModel
 from mealie.db.models.users.user_to_recipe import UserToRecipe
 from mealie.repos.repository_ai_provider import GroupRepositoryAIProvider
+from mealie.repos.repository_app_info import RepositoryAppInfo
 from mealie.repos.repository_cookbooks import RepositoryCookbooks
 from mealie.repos.repository_foods import RepositoryFood
 from mealie.repos.repository_household import RepositoryHousehold, RepositoryHouseholdRecipes
@@ -461,3 +462,10 @@ class AllRepositories:
         return HouseholdRepositoryGeneric(
             self.session, PK_ID, GroupWebhooksModel, ReadWebhook, group_id=self.group_id, household_id=self.household_id
         )
+
+    # ================================================================
+    # System
+
+    @cached_property
+    def app_info(self) -> RepositoryAppInfo:
+        return RepositoryAppInfo(self.session)
