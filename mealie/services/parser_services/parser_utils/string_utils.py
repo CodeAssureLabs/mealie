@@ -64,16 +64,16 @@ def convert_vulgar_fractions_to_regular_fractions(text: str) -> str:
     return text
 
 
-def extract_quantity_from_string(source_str: str) -> tuple[float, str]:
+def extract_quantity_from_string(source_str: str, default_quantity: float = 0.0) -> tuple[float, str]:
     """
     Extracts a quantity from a string. The quantity can be a fraction, decimal, or integer.
 
-    Returns the quantity and the remaining string. If no quantity is found, returns the quantity as 0.
+    Returns the quantity and the remaining string. If no quantity is found, returns ``default_quantity``.
     """
 
     source_str = source_str.strip()
     if not source_str:
-        return 0, ""
+        return default_quantity, ""
 
     source_str = convert_vulgar_fractions_to_regular_fractions(source_str)
 
@@ -117,5 +117,5 @@ def extract_quantity_from_string(source_str: str) -> tuple[float, str]:
     except ZeroDivisionError:
         pass
 
-    # If no match, return 0 and the original string
-    return 0, source_str
+    # If no match, return the fallback quantity and the original string
+    return default_quantity, source_str
