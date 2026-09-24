@@ -12,8 +12,4 @@ def summarize_nutrition(nutrition: Nutrition | None) -> list[str]:
     if nutrition is None:
         return []
 
-    lines: list[str] = []
-    for field, value in nutrition.model_dump().items():
-        if value:
-            lines.append(format_nutrition_line(field, value))
-    return lines
+    return [format_nutrition_line(field, value) for field, value in nutrition.model_dump().items() if value]
