@@ -136,7 +136,7 @@ def import_image(src: str | Path, recipe_id: UUID4, extraction_root: Path | None
         src = Path(src)
 
     if extraction_root is not None:
-        if safe_local_path(src, extraction_root) is None:
+        if resolve_safe_local_path(src, extraction_root) is None:
             root_logger.get_logger().warning(
                 "Rejected image path outside extraction root: %s (root: %s)", src, extraction_root
             )
