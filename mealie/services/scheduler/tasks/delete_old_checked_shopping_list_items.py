@@ -4,11 +4,11 @@ from pydantic import UUID4
 
 from mealie.db.db_setup import session_context
 from mealie.repos.all_repositories import get_repositories
-from mealie.routes.households.controller_shopping_lists import publish_list_item_events
 from mealie.schema.response.pagination import OrderDirection, PaginationQuery
 from mealie.schema.user.user import DEFAULT_INTEGRATION_ID
 from mealie.services.event_bus_service.event_bus_service import EventBusService
 from mealie.services.event_bus_service.event_types import EventDocumentDataBase, EventTypes
+from mealie.services.household_services.shopping_list_events import ShoppingListEventService
 from mealie.services.household_services.shopping_lists import ShoppingListService
 
 MAX_CHECKED_ITEMS = 100
@@ -48,7 +48,7 @@ def _trim_list_items(shopping_list_service: ShoppingListService, shopping_list_i
 
     items_to_delete = query.items[MAX_CHECKED_ITEMS:]
     items_response = shopping_list_service.bulk_delete_items([item.id for item in items_to_delete])
-    publish_list_item_events(event_publisher, items_response)
+    ShoppingListEventService(event_publisher).publish_collection(items_response)
 
 
 def delete_old_checked_list_items():
