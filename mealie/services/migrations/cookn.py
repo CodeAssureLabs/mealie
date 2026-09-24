@@ -11,7 +11,7 @@ from mealie.services.parser_services._base import DataMatcher
 from mealie.services.parser_services.parser_utils.string_utils import extract_quantity_from_string
 
 from ._migration_base import BaseMigrator
-from .utils.migration_helpers import format_time, safe_local_path
+from .utils.migration_helpers import format_time, resolve_safe_local_path
 
 
 class DSVParser:
@@ -159,9 +159,9 @@ class CooknMigrator(BaseMigrator):
                     _extension = _media_type.split("/")[-1]
                     _old_image_path = Path(db.directory) / str(_media_id)
                     new_image_path = _old_image_path.with_suffix(f".{_extension}")
-                    if safe_local_path(_old_image_path, db.directory) is None:
+                    if resolve_safe_local_path(_old_image_path, db.directory) is None:
                         return None
-                    if safe_local_path(new_image_path, db.directory) is None:
+                    if resolve_safe_local_path(new_image_path, db.directory) is None:
                         return None
                     # Rename the file if it exists and has no extension
                     if _old_image_path.exists() and not new_image_path.exists():
@@ -170,7 +170,7 @@ class CooknMigrator(BaseMigrator):
                         return str(new_image_path)
             else:
                 candidate = Path(db.directory) / str(_media_id)
-                if safe_local_path(candidate, db.directory) is not None:
+                if resolve_safe_local_path(candidate, db.directory) is not None:
                     return str(candidate)
         return None
 

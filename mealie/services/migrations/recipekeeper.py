@@ -8,7 +8,7 @@ from mealie.services.scraper import cleaner
 
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
-from .utils.migration_helpers import parse_iso8601_duration, safe_local_path
+from .utils.migration_helpers import parse_iso8601_duration, resolve_safe_local_path
 
 
 def clean_instructions(instructions: list[str]) -> list[str]:
@@ -30,7 +30,7 @@ def parse_recipe_div(recipe, image_path):
         elif item.name == "div":
             meta[item["itemprop"]] = list(item.stripped_strings)
         elif item.name == "img":
-            safe = safe_local_path(image_path / item["src"], image_path)
+            safe = resolve_safe_local_path(image_path / item["src"], image_path)
             if safe is not None:
                 meta[item["itemprop"]] = str(safe)
         else:
