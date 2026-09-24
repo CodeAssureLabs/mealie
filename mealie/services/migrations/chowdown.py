@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ._migration_base import BaseMigrator
 from .utils.migration_alias import MigrationAlias
-from .utils.migration_helpers import MigrationReaders, safe_local_path, split_by_comma
+from .utils.migration_helpers import MigrationReaders, resolve_safe_local_path, split_by_comma
 
 
 class ChowdownMigrator(BaseMigrator):
@@ -60,7 +60,7 @@ class ChowdownMigrator(BaseMigrator):
                             continue
 
                         if r.image:
-                            cd_image = safe_local_path(image_dir.joinpath(r.image), image_dir)
+                            cd_image = resolve_safe_local_path(image_dir.joinpath(r.image), image_dir)
                         else:
                             cd_image = None
                     except StopIteration:
