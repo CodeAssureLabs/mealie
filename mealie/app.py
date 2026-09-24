@@ -133,6 +133,7 @@ async def start_scheduler():
 
     SchedulerRegistry.register_minutely(
         tasks.post_group_webhooks,
+        tasks.log_scheduler_heartbeat,
     )
 
     SchedulerRegistry.register_hourly(
