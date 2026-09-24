@@ -400,6 +400,11 @@ export interface RecipeIngredientBase {
 export interface RecipeLastMade {
   timestamp: string;
 }
+export interface RecipeNutritionImport {
+  raw?: {
+    [k: string]: unknown;
+  } | null;
+}
 export interface RecipeShareToken {
   recipeId: string;
   expiresAt?: string;
