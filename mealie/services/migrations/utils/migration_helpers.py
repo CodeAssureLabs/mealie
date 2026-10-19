@@ -101,7 +101,7 @@ def glob_walker(directory: Path, glob_str: str, return_parent=True) -> list[Path
     return matches
 
 
-def safe_local_path(candidate: str | Path, root: Path) -> Path | None:
+def resolve_safe_local_path(candidate: str | Path, root: Path) -> Path | None:
     """
     Returns the resolved path only if it is safely contained within root.
 
